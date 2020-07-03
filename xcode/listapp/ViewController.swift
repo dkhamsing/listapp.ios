@@ -15,17 +15,13 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "UICollectionView - iOS 6"
+        title = "Compositional Layout iOS 13"
 
         // Setup collection view
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 0
-        layout.minimumLineSpacing = 0
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
         cv.backgroundColor = .white
         cv.register(ShowCell.self, forCellWithReuseIdentifier: ShowCell.reuseIdentifier)
         cv.dataSource = self
-        cv.delegate = self
 
         // Display collection view
         cv.frame = view.bounds
@@ -48,6 +44,19 @@ class ViewController: UIViewController {
             }
         }.resume()
     }
+
+    func makeLayout() -> UICollectionViewLayout {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                             heightDimension: .absolute(210/2))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize, subitem: item, count: 1)
+
+        let section = NSCollectionLayoutSection(group: group)
+
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        return layout
+    }
 }
 
 extension ViewController: UICollectionViewDataSource {
@@ -63,14 +72,6 @@ extension ViewController: UICollectionViewDataSource {
         cell.subtitleLabel.text = show.subtitle
 
         return cell
-    }
-}
-
-extension ViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        var size = view.bounds.size
-        size.height = 210/2
-        return size
     }
 }
 
