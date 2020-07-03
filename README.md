@@ -3,7 +3,7 @@
 Basic lists on iOS :sparkles:
 
 - [UITableView](1-uitableview/) `iOS 2*` `2008`
-- UICollectionView `iOS 6` `2012`
+- [UICollectionView](2-uicollectionview/) `iOS 6` `2012`
 
 <img src=images/ios2.png width=200> <img src=images/ios6.png width=200>
 
