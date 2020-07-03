@@ -5,9 +5,9 @@ Basic lists on iOS :sparkles:
 - [UITableView](1-uitableview/) `iOS 2*` `2008`
 - [UICollectionView](2-uicollectionview/) `iOS 6` `2012`
 - [Compositional Layout](3-compositional-layout/) `iOS 13` `2019`
-- Diffable Data Source `iOS 13` `2019`
+- [Diffable Data Source](4-diffable-data-source/) `iOS 13` `2019`
 
-<img src=images/ios2.png width=200> <img src=images/ios6.png width=200> <img src=images/ios13-a.png width=200>
+<img src=images/ios2.png width=200> <img src=images/ios6.png width=200> <img src=images/ios13-a.png width=200> <img src=images/ios13-b.png width=200>
 
 [`* actually iPhone OS 2`](https://en.wikipedia.org/wiki/IPhone_OS_2)
 
