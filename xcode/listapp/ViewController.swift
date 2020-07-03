@@ -15,12 +15,11 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "Diffable Data Source - iOS 13"
+        title = "UICollectionViewComp..Layout - List - iOS 14"
 
         // Setup collection view
         let cv = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
         cv.backgroundColor = .white
-        cv.register(ShowCell.self, forCellWithReuseIdentifier: ShowCell.reuseIdentifier)
 
         let ds = makeDataSource(cv: cv)
         self.dataSource = ds
@@ -53,19 +52,22 @@ class ViewController: UIViewController {
     }
 
     func makeDataSource(cv: UICollectionView) -> UICollectionViewDiffableDataSource<Section, Show> {
-        return UICollectionViewDiffableDataSource<Section, Show>(collectionView: cv) { (cview, indexPath, show) -> UICollectionViewCell? in
-            guard let cell = cv.dequeueReusableCell(withReuseIdentifier: ShowCell.reuseIdentifier, for: indexPath) as? ShowCell else { fatalError("Cannot create new cell") }
+        let cellRegistration: UICollectionView.CellRegistration<UICollectionViewListCell, Show> = UICollectionView.CellRegistration { cell, indexPath, show in
+            var config = cell.defaultContentConfiguration()
+            config.text = show.name
+            config.secondaryText = show.subtitle
+            config.secondaryTextProperties.color = .secondaryLabel
+            cell.contentConfiguration = config
+        }
 
-            cell.titleLabel.text = show.name
-            cell.subtitleLabel.text = show.subtitle
-
-            return cell
+        return UICollectionViewDiffableDataSource<Section, Show>(collectionView: cv) { (cv, indexPath, show) -> UICollectionViewCell? in
+            cv.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: show)
         }
     }
 
     func makeLayout() -> UICollectionViewLayout {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                             heightDimension: .absolute(210/2))
+                                             heightDimension: .absolute(110))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize, subitem: item, count: 1)
@@ -74,48 +76,6 @@ class ViewController: UIViewController {
 
         let layout = UICollectionViewCompositionalLayout(section: section)
         return layout
-    }
-}
-
-class ShowCell: UICollectionViewCell {
-    static let reuseIdentifier = "ShowCell"
-
-    let titleLabel = UILabel ()
-    let subtitleLabel = UILabel ()
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        setup()
-    }
-
-    func setup() {
-        titleLabel.numberOfLines = 0
-
-        subtitleLabel.font = .preferredFont(forTextStyle: .caption1)
-        subtitleLabel.numberOfLines = 4
-        subtitleLabel.textColor = .secondaryLabel
-
-        [titleLabel, subtitleLabel].forEach {
-            contentView.addSubview($0)
-            $0.translatesAutoresizingMaskIntoConstraints = false
-        }
-
-        let inset: CGFloat = 20
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -inset),
-
-            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
-            subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            subtitleLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
-            subtitleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
-        ])
     }
 }
 
