@@ -9,21 +9,29 @@
 import UIKit
 
 class ViewController: UIViewController {
-    let tableView = UITableView()
+    var collectionView: UICollectionView?
     var dataSource: [Show] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "UITableView - iOS 2"
+        title = "UICollectionView - iOS 6"
 
-        // Setup table view
-        tableView.register(ShowCell.self, forCellReuseIdentifier: ShowCell.reuseIdentifier)
-        tableView.dataSource = self
+        // Setup collection view
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 0
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.backgroundColor = .white
+        cv.register(ShowCell.self, forCellWithReuseIdentifier: ShowCell.reuseIdentifier)
+        cv.dataSource = self
+        cv.delegate = self
 
-        // Display table view
-        tableView.frame = view.bounds
-        view.addSubview(tableView)
+        // Display collection view
+        cv.frame = view.bounds
+        view.addSubview(cv)
+
+        collectionView = cv
 
         // Load data
         let urlString = "https://api.tvmaze.com/shows"
@@ -36,44 +44,75 @@ class ViewController: UIViewController {
             self.dataSource = shows
 
             DispatchQueue.main.async {
-                self.tableView.reloadData()
+                self.collectionView?.reloadData()
             }
         }.resume()
     }
 }
 
-extension ViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+extension ViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return dataSource.count
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ShowCell.reuseIdentifier) as? ShowCell else { fatalError("Cannot create new cell") }
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ShowCell.reuseIdentifier, for: indexPath) as? ShowCell else { fatalError("Cannot create new cell") }
 
         let show = dataSource[indexPath.row]
-        cell.textLabel?.text = show.name
-        cell.detailTextLabel?.text = show.subtitle
+        cell.titleLabel.text = show.name
+        cell.subtitleLabel.text = show.subtitle
 
         return cell
     }
 }
 
-class ShowCell: UITableViewCell {
+extension ViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        var size = view.bounds.size
+        size.height = 210/2
+        return size
+    }
+}
+
+class ShowCell: UICollectionViewCell {
     static let reuseIdentifier = "ShowCell"
+
+    let titleLabel = UILabel ()
+    let subtitleLabel = UILabel ()
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
         setup()
     }
 
     func setup() {
-        detailTextLabel?.numberOfLines = 4
-        detailTextLabel?.textColor = .secondaryLabel
+        titleLabel.numberOfLines = 0
+
+        subtitleLabel.font = .preferredFont(forTextStyle: .caption1)
+        subtitleLabel.numberOfLines = 4
+        subtitleLabel.textColor = .secondaryLabel
+
+        [titleLabel, subtitleLabel].forEach {
+            contentView.addSubview($0)
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+
+        let inset: CGFloat = 20
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -inset),
+
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
+            subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+            subtitleLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
+            subtitleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
+        ])
     }
 }
 
