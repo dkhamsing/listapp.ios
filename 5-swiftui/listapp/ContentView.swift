@@ -9,11 +9,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    @ObservedObject private var tvmaze = Tvmaze()
+    @State var shows: [Show] = []
 
     var body: some View {
         NavigationView {
-            List(tvmaze.shows) { show in
+            List(shows) { show in
                 VStack(alignment: .leading) {
                     Text(show.name)
                     Text(show.subtitle)
@@ -24,9 +24,23 @@ struct ContentView: View {
             }
             .navigationBarTitle("SwiftUI - iOS 13", displayMode: .inline)
             .onAppear {
-                self.tvmaze.loadData()
+                self.loadData()
             }
         }
+    }
+
+    func loadData() {
+        let urlString = "https://api.tvmaze.com/shows"
+        guard let url = URL(string: urlString) else { return }
+        URLSession.shared.dataTask(with: url) { (data, response, error) in
+            guard
+                let data = data,
+                let shows = try? JSONDecoder().decode([Show].self, from: data) else { return }
+
+            DispatchQueue.main.async {
+                self.shows = shows
+            }
+        }.resume()
     }
 }
 
@@ -42,23 +56,5 @@ extension Show {
             .replacingOccurrences(of: "</p>", with: "\n")
             .replacingOccurrences(of: "<b>", with: "")
             .replacingOccurrences(of: "</b>", with: "")
-    }
-}
-
-class Tvmaze: ObservableObject {
-    @Published var shows: [Show] = []
-
-    func loadData() {
-        let urlString = "https://api.tvmaze.com/shows"
-        guard let url = URL(string: urlString) else { return }
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            guard
-                let data = data,
-                let shows = try? JSONDecoder().decode([Show].self, from: data) else { return }
-
-            DispatchQueue.main.async {
-                self.shows = shows
-            }
-        }.resume()
     }
 }
