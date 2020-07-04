@@ -2,8 +2,8 @@
 
 Basic lists on iOS :sparkles:
 
-- [UITableView](0-uitableview-objectivec/) `iOS 2&` `Objective-C` `2008`
-- [UITableView](1-uitableview/) `iOS 2*` `Swift` `2008`
+- [UITableView](0-uitableview-objectivec/) `iOS 2*` `Objective-C` `2008`
+- [UITableView](1-uitableview-swift/) `iOS 2*` `Swift` `2008`
 - [UICollectionView](2-uicollectionview/) `iOS 6` `2012`
 - [Compositional Layout](3-compositional-layout/) `iOS 13` `2019`
 - [Diffable Data Source](4-diffable-data-source/) `iOS 13` `2019`

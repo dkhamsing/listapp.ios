@@ -15,7 +15,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "UITableView - iOS 2"
+        title = "UITableView - iOS 2 - Swift"
 
         // Setup table view
         tableView.register(ShowCell.self, forCellReuseIdentifier: ShowCell.reuseIdentifier)
