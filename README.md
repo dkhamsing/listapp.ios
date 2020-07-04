@@ -2,7 +2,7 @@
 
 Basic lists on iOS :sparkles:
 
-- UITableView `iOS 2&` `Objective-C` `2008`
+- [UITableView](0-uitableview-objectivec/) `iOS 2&` `Objective-C` `2008`
 - [UITableView](1-uitableview/) `iOS 2*` `Swift` `2008`
 - [UICollectionView](2-uicollectionview/) `iOS 6` `2012`
 - [Compositional Layout](3-compositional-layout/) `iOS 13` `2019`
@@ -14,7 +14,7 @@ Basic lists on iOS :sparkles:
 
 [`* actually iPhone OS 2`](https://en.wikipedia.org/wiki/IPhone_OS_2)
 
-<img src=images/ios2.png width=200> <img src=images/ios6.png width=200> <img src=images/ios13-a.png width=200> <img src=images/ios13-b.png width=200> <img src=images/ios13-c.png width=200> <img src=images/ios14.png width=200>
+<img src=images/ios2-objectivec.png width=200> <img src=images/ios2-swift.png width=200> <img src=images/ios6.png width=200> <img src=images/ios13-a.png width=200> <img src=images/ios13-b.png width=200> <img src=images/ios13-c.png width=200> <img src=images/ios14.png width=200>
 
 ## Notes
 
