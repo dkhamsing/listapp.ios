@@ -9,21 +9,27 @@
 import UIKit
 
 class ViewController: UIViewController {
-    let tableView = UITableView()
-    var dataSource: [Show] = []
+    var collectionView: UICollectionView?
+    var dataSource: UICollectionViewDiffableDataSource<Section, Show>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "UITableView - iOS 2 - Swift"
+        title = "UICollectionViewComp..Layout - List - iOS 14"
 
-        // Setup table view
-        tableView.register(ShowCell.self, forCellReuseIdentifier: ShowCell.reuseIdentifier)
-        tableView.dataSource = self
+        // Setup collection view
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
+        cv.backgroundColor = .white
 
-        // Display table view
-        tableView.frame = view.bounds
-        view.addSubview(tableView)
+        let ds = makeDataSource(cv: cv)
+        self.dataSource = ds
+        cv.dataSource = ds
+
+        // Display collection view
+        cv.frame = view.bounds
+        view.addSubview(cv)
+
+        collectionView = cv
 
         // Load data
         let urlString = "https://api.tvmaze.com/shows"
@@ -33,51 +39,52 @@ class ViewController: UIViewController {
                 let data = data,
                 let shows = try? JSONDecoder().decode([Show].self, from: data) else { return }
 
-            self.dataSource = shows
+            // create snapshot
+            var snapshot = NSDiffableDataSourceSnapshot<Section, Show>()
+            snapshot.appendSections([.main])
+            snapshot.appendItems(shows, toSection: .main)
+            self.dataSource?.apply(snapshot, animatingDifferences: false)
 
             DispatchQueue.main.async {
-                self.tableView.reloadData()
+                self.collectionView?.reloadData()
             }
         }.resume()
     }
-}
 
-extension ViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataSource.count
+    func makeDataSource(cv: UICollectionView) -> UICollectionViewDiffableDataSource<Section, Show> {
+        let cellRegistration: UICollectionView.CellRegistration<UICollectionViewListCell, Show> = UICollectionView.CellRegistration { cell, indexPath, show in
+            var config = cell.defaultContentConfiguration()
+            config.text = show.name
+            config.secondaryText = show.subtitle
+            config.secondaryTextProperties.color = .secondaryLabel
+            cell.contentConfiguration = config
+        }
+
+        return UICollectionViewDiffableDataSource<Section, Show>(collectionView: cv) { (cv, indexPath, show) -> UICollectionViewCell? in
+            cv.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: show)
+        }
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ShowCell.reuseIdentifier) as? ShowCell else { fatalError("Cannot create new cell") }
+    func makeLayout() -> UICollectionViewLayout {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                             heightDimension: .absolute(110))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-        let show = dataSource[indexPath.row]
-        cell.textLabel?.text = show.name
-        cell.detailTextLabel?.text = show.subtitle
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize, subitem: item, count: 1)
 
-        return cell
-    }
-}
+        let section = NSCollectionLayoutSection(group: group)
 
-class ShowCell: UITableViewCell {
-    static let reuseIdentifier = "ShowCell"
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
-
-        setup()
-    }
-
-    func setup() {
-        detailTextLabel?.numberOfLines = 4
-        detailTextLabel?.textColor = .secondaryLabel
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        return layout
     }
 }
 
-struct Show: Codable {
+enum Section: CaseIterable {
+    case main
+}
+
+struct Show: Codable, Identifiable, Hashable {
+    let id: Int
     let name, status, premiered, summary: String
 }
 
