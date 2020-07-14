@@ -15,12 +15,11 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "Diffable Data Source - iOS 13"
+        title = "UICollectionViewComp..Layout - List - iOS 14"
 
         // Setup collection view
         let cv = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
         cv.backgroundColor = .white
-        cv.register(ShowCell.self, forCellWithReuseIdentifier: ShowCell.reuseIdentifier)
 
         let ds = makeDataSource(cv: cv)
         self.dataSource = ds
@@ -53,27 +52,23 @@ class ViewController: UIViewController {
     }
 
     func makeDataSource(cv: UICollectionView) -> UICollectionViewDiffableDataSource<Section, Show> {
-        return UICollectionViewDiffableDataSource<Section, Show>(collectionView: cv) { (cview, indexPath, show) -> UICollectionViewCell? in
-            guard let cell = cv.dequeueReusableCell(withReuseIdentifier: ShowCell.reuseIdentifier, for: indexPath) as? ShowCell else { fatalError("Cannot create new cell") }
-
+        let cellRegistration: UICollectionView.CellRegistration<ShowCell, Show> = UICollectionView.CellRegistration { cell, indexPath, show in
             cell.titleLabel.text = show.name
             cell.subtitleLabel.text = show.subtitle
+        }
 
-            return cell
+        return UICollectionViewDiffableDataSource<Section, Show>(collectionView: cv) { (cv, indexPath, show) -> UICollectionViewCell? in
+            cv.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: show)
         }
     }
 
     func makeLayout() -> UICollectionViewLayout {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                             heightDimension: .absolute(210/2))
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        return UICollectionViewCompositionalLayout { (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
+            let configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+            let section = NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
 
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize, subitem: item, count: 1)
-
-        let section = NSCollectionLayoutSection(group: group)
-
-        let layout = UICollectionViewCompositionalLayout(section: section)
-        return layout
+            return section
+        }
     }
 }
 
@@ -107,7 +102,7 @@ class ShowCell: UICollectionViewCell {
 
         let inset: CGFloat = 20
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -inset),
 
