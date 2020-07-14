@@ -52,12 +52,9 @@ class ViewController: UIViewController {
     }
 
     func makeDataSource(cv: UICollectionView) -> UICollectionViewDiffableDataSource<Section, Show> {
-        let cellRegistration: UICollectionView.CellRegistration<UICollectionViewListCell, Show> = UICollectionView.CellRegistration { cell, indexPath, show in
-            var config = cell.defaultContentConfiguration()
-            config.text = show.name
-            config.secondaryText = show.subtitle
-            config.secondaryTextProperties.color = .secondaryLabel
-            cell.contentConfiguration = config
+        let cellRegistration: UICollectionView.CellRegistration<ShowCell, Show> = UICollectionView.CellRegistration { cell, indexPath, show in
+            cell.titleLabel.text = show.name
+            cell.subtitleLabel.text = show.subtitle
         }
 
         return UICollectionViewDiffableDataSource<Section, Show>(collectionView: cv) { (cv, indexPath, show) -> UICollectionViewCell? in
@@ -66,16 +63,54 @@ class ViewController: UIViewController {
     }
 
     func makeLayout() -> UICollectionViewLayout {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
-                                             heightDimension: .absolute(110))
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        return UICollectionViewCompositionalLayout { (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
+            let configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+            let section = NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
 
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: itemSize, subitem: item, count: 1)
+            return section
+        }
+    }
+}
 
-        let section = NSCollectionLayoutSection(group: group)
+class ShowCell: UICollectionViewCell {
+    static let reuseIdentifier = "ShowCell"
 
-        let layout = UICollectionViewCompositionalLayout(section: section)
-        return layout
+    let titleLabel = UILabel ()
+    let subtitleLabel = UILabel ()
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        setup()
+    }
+
+    func setup() {
+        titleLabel.numberOfLines = 0
+
+        subtitleLabel.font = .preferredFont(forTextStyle: .caption1)
+        subtitleLabel.numberOfLines = 4
+        subtitleLabel.textColor = .secondaryLabel
+
+        [titleLabel, subtitleLabel].forEach {
+            contentView.addSubview($0)
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+
+        let inset: CGFloat = 20
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: inset),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -inset),
+
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
+            subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+            subtitleLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
+            subtitleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
+        ])
     }
 }
 
