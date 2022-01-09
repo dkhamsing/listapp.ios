@@ -27,12 +27,10 @@ struct ContentView: View {
     
     @MainActor
     func loadData() async {
-        let urlString = "https://api.tvmaze.com/shows"
-        guard let url = URL(string: urlString) else { return }
-        do {
-            let (data, _) = try await URLSession.shared.data(for: URLRequest(url: url))
-            shows = try JSONDecoder().decode([Show].self, from: data)
-        } catch { }
+        guard let url = URL(string: "https://api.tvmaze.com/shows"),
+              let (data, _) = try? await URLSession.shared.data(for: URLRequest(url: url)),
+              let shows = try? JSONDecoder().decode([Show].self, from: data) else { return }
+        self.shows = shows
     }
 }
 
