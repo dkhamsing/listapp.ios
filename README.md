@@ -9,7 +9,8 @@ Basic lists on iOS :sparkles:
 - [Diffable Data Source](4-diffable-data-source/) `iOS 13` `2019` [`diff`](https://github.com/dkhamsing/listapp.ios/commit/a624a91b6e91227bc8798e50f99a081d5eb56cba)
 - [SwiftUI](5-swiftui/) `iOS 13` `2019` [`Playground`](5-swiftui-playground/)  [`diff`](https://github.com/dkhamsing/listapp.ios/commit/3ee5b2688979d1141f09b0046be96f31a64b2116)
 - [UICollectionView Compositional Layout List](6-uicollectionview-compositional-layout-list) `iOS 14` `2020` [`diff`](https://github.com/dkhamsing/listapp.ios/commit/5411ff3b790b08802656bf169837a8d39693b56d)
-
+- [Swift Playgrounds 4](7-swiftui-swift-playgrounds-4) `iOS 15` `2022` [`diff`](https://github.com/dkhamsing/listapp.ios/pull/2)
+ 
 <img src=images/1.png width=600>
 
 [`* actually iPhone OS 2`](https://en.wikipedia.org/wiki/IPhone_OS_2)
@@ -18,7 +19,7 @@ Basic lists on iOS :sparkles:
 
 ## Notes
 
-- Need Xcode 11 or Xcode 12
+- Need Xcode 11 or Xcode 12 or Swift Playgrounds 4
 - No Storyboards :no_good:
 
 ## Credits
